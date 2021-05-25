@@ -5,18 +5,20 @@
 class KubaGame:
     def __init__(self, player1, player2):
         """Initializer for the Kuba Game. Assigns player marble colors and creates board.
-        :param player1 tuple: contains player name and color of the marble that the player is playing R, B, or W
-        :param player1 tuple: contains player name and color of the marble that the player is playing R, B, or W
+        :param player1 tuple: contains player name and color of the marble that the player is playing B or W
+        :param player1 tuple: contains player name and color of the marble that the player is playing B or W
         """
         # players of the game  {player1name: {color: , red_marbles:
-        self._player1={"name": player1[0],"color": player1[1]}
-        self._player2={"name": player2[0], "color":player2[1]}
+        self._players= {player1[0]: {"name": player1[0], "color": player1[1]},
+                        player2[0]: {"name": player2[0], "color": player2[1]}}
         # empty board, no marbles yet
         self._board= self.create_board()
         # current player's turn
         self._turn=None
         # winner state
         self._winner=None
+        # red marbles captured for each player
+        self._captured={player1[0]:0, player2[0]:0}
 
     def create_board(self):
         """Creates starting iteration of the game board"""
@@ -43,17 +45,29 @@ class KubaGame:
         return self._board
 
     def get_winner(self):
-        """Returns current game winner."""
+        """Returns current game winner or None if no winner yet."""
         return self._winner
+
+    def get_opposing_player(self, player_name):
+        """Returns the opposing player's name.
+        :param player_name String: a player's name"""
+        players_keys=list(self._players.keys())
+        if player_name==players_keys[0]:
+            return players_keys[1]
+        else:
+            return players_keys[0]
 
 
     def update_turn(self):
         """Sets turn be the opposing player."""
+        # was player 1's turn, change to player 2's turn
+        players_keys=list(self._players.keys())
 
-        if self._turn==self._player1:
-            self._turn=self._player2
-        elif self._turn==self._player2:
-            self._turn=self._player1
+        if self._turn==players_keys[0]:
+            self._turn=players_keys[1]
+        # was player 2's turn, change to player 1's turn
+        elif self._turn==players_keys[1]:
+            self._turn=players_keys[0]
 
 
     def get_turn(self):
@@ -74,9 +88,42 @@ class KubaGame:
         except IndexError:
             return "X"
 
+    def get_captured(self, player_name):
+        """Returns amount of red marbles captured.
+        :param player_name String: name of player to look up red marble count
+        """
+        try:
+            return self._captured[player_name]
+        except KeyError:
+            return "no player exists"
+
+    def make_move(self, playername, coordinates, direction):
+        """Makes a move on the game board. If the move is successful returns True else returns False.
+        :param playername String: name of the player making the move
+        :param coordinates tuple: coordinates of the marble to be moved
+        :param direction String: direction to move the marble at the specified coordinates. Valid directions are L, R, F, B"""
+
+       # '''If the move is being made after the game has been won, or when it's not the player's turn
+       #  or if the coordinates provided are not valid or a marble in the coordinates cannot be moved
+       #  in the direction specified or it is not the player's marble or for any other invalid conditions return False'''
+
+        # game over, turn is opposing player, no marble at coordinate, not this player's marble at coordinate
+        # if self._winner!=None or self._turn==self.get_opposing_player(playername) or self.get_marble(coordinates)=="X" or
+        #     self._players[playername][""]:
+        #     return False
+        #
+        #
+        # # update turn after first player plays to be opposite player's turn
+        # if self._turn is None:
+        #     self._turn=self.get_opposing_player(playername)
 
 
+
+# TODO: implement moving the marble row and column logic, is_players_marble method
 
 testgame=KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 testgame.print_board()
 print(testgame.get_marble((6,0)))
+print(testgame.get_captured("PlayerA"))
+print(testgame.get_opposing_player("PlayerB"))
+
