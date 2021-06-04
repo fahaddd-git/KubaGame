@@ -68,7 +68,7 @@ class KubaGame:
         elif self._turn == players_keys[1]:
             self._turn = players_keys[0]
 
-    def get_turn(self):
+    def get_current_turn(self):
         """Returns which player's turn it is to play."""
         return self._turn
 
@@ -97,6 +97,22 @@ class KubaGame:
         except IndexError:
             return "X"
 
+    def get_marble_count(self):
+        """Returns the number of White, Black, and Red marbles on the board as a tuple. (W,B,R)
+        """
+        white=0
+        black=0
+        red=0
+        for row in self._board:
+            for square in row:
+                if square=="W":
+                    white+=1
+                if square=="B":
+                    black+=1
+                if square=="R":
+                    red+=1
+        return (white, black, red)
+
     def get_captured(self, player_name):
         """Returns amount of red marbles captured.
         :param player_name String: name of player to look up red marble count
@@ -118,7 +134,7 @@ class KubaGame:
 
         # game over, turn is opposing player, no marble at coordinate, not this player's marble at coordinate
         if self._winner != None or self._turn == self.get_opposing_player(playername) or \
-                self.get_marble(coordinates) == "X" or self.is_players_marble(playername, coordinates):
+                self.get_marble(coordinates) == "X" or self.is_players_marble(playername, coordinates)==False:
             return False
 
         # update turn after first player plays to be opposite player's turn
@@ -126,7 +142,7 @@ class KubaGame:
             self._turn = self.get_opposing_player(playername)
 
 
-# TODO: implement moving the marble row and column logic, is_players_marble method
+# TODO: implement moving the marble row and column logic,
 
 testgame = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 testgame.print_board()
@@ -134,3 +150,4 @@ print(testgame.get_marble((6, 0)))
 print(testgame.get_captured("PlayerA"))
 print(testgame.get_opposing_player("PlayerB"))
 print(testgame.is_players_marble("PlayerB", (5,0)))
+print(testgame.get_marble_count())
