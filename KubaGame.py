@@ -97,6 +97,42 @@ class KubaGame:
         except IndexError:
             return "X"
 
+    def move_row(self, coords, row, direction):
+        """
+        :param coords: tuple starting where to move
+        :param row: list to manipulate
+        :return:
+        """
+
+        if direction == 'L':
+            # reverse row
+            row.reverse()
+            row_length = len(row) - 1
+            # column coordinate is length of row-given coord
+            coord_row, coord_col = coords[0], row_length - coords[1]
+
+        elif direction == 'R':
+            # unpack coords
+            coord_row, coord_col = coords[0], coords[1]
+
+        # gives index of next empty spaces
+        for index, item in enumerate(row, start=0):
+            # if the empty space is after chosen coord or we reached the end
+            if (index > coord_col and item == []) or index == len(row) - 1:
+                print(index, item)
+                # pop off empty space or end
+                location = row.pop(index)
+                # put an empty space before it
+                row.insert(coord_col - 1, [])
+                # reverse back row if moving L
+                if direction == "L":
+                    row.reverse()
+                print(row)
+                # return what got popped off so we can add to marble count
+                return location
+
+
+
     def get_marble_count(self):
         """Returns the number of White, Black, and Red marbles on the board as a tuple. (W,B,R)
         """
@@ -151,3 +187,4 @@ print(testgame.get_captured("PlayerA"))
 print(testgame.get_opposing_player("PlayerB"))
 print(testgame.is_players_marble("PlayerB", (5,0)))
 print(testgame.get_marble_count())
+print(testgame.get_board())
