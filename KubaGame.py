@@ -97,41 +97,78 @@ class KubaGame:
         except IndexError:
             return "X"
 
-    def move_row(self, coords, row, direction):
+    def get_column(self, column):
         """
-        :param coords: tuple starting where to move
-        :param row: list to manipulate
+        :param coordinates tuple:
+        :return: column at coordinate location as a list
+        """
+        return [tile[column] for tile in self._board]
+
+
+
+    def move(self, coords, direction):
+        """
+        :param coords: tuple
+        :param row: list
         :return:
         """
+        row_length = len(self._board) - 1
 
+        # left movement
         if direction == 'L':
-            # reverse row
-            row.reverse()
-            row_length = len(row) - 1
+            row = self._board[coords[0]]
             # column coordinate is length of row-given coord
             coord_row, coord_col = coords[0], row_length - coords[1]
+            # reverse row
+            row.reverse()
 
+        # right movement
         elif direction == 'R':
+            row = self._board[coords[0]]
             # unpack coords
             coord_row, coord_col = coords[0], coords[1]
 
-        # gives index of next empty spaces
+        # backwards movement
+        elif direction == "B":
+            # flipped row/ col for vertical mvt
+            coord_row, coord_col = coords[1], coords[0]
+            row = [tile[coord_row] for tile in self._board]
+
+        # forwards movement
+        elif direction == "F":
+            coord_row, coord_col = coords[1], row_length - coords[0]
+            row = [tile[coord_row] for tile in self._board]
+            row.reverse()
+
+        # gives index of next empty spaces (if any)
         for index, item in enumerate(row, start=0):
             # if the empty space is after chosen coord or we reached the end
             if (index > coord_col and item == []) or index == len(row) - 1:
-                print(index, item)
+                # print(index, item)
                 # pop off empty space or end
-                location = row.pop(index)
-                # put an empty space before it
-                row.insert(coord_col - 1, [])
-                # reverse back row if moving L
+                discarded_tile = row.pop(index)
+                # put an empty space before it (avoid indexing error)
+                if coord_col - 1 < 0:
+                    row.insert(0, [])
+                else:
+                    row.insert(coord_col - 1, [])
+                # reverse back row if moving L or F
+
                 if direction == "L":
                     row.reverse()
-                print(row)
+
+                elif direction == "B":
+                    for nums, marbles in enumerate(self._board, start=0):
+                        self._board[nums][coord_row] = row[nums]
+
+                elif direction == "F":
+                    row.reverse()
+                    for nums, marbles in enumerate(self._board, start=0):
+                        self._board[nums][coord_row] = row[nums]
+
+                #print(row)
                 # return what got popped off so we can add to marble count
-                return location
-
-
+                return discarded_tile
 
     def get_marble_count(self):
         """Returns the number of White, Black, and Red marbles on the board as a tuple. (W,B,R)
@@ -179,12 +216,15 @@ class KubaGame:
 
 
 # TODO: implement moving the marble row and column logic,
+def main():
+    testgame = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+    testgame.print_board()
+    print(testgame.get_marble((6, 0)))
+    print(testgame.get_captured("PlayerA"))
+    print(testgame.get_opposing_player("PlayerB"))
+    print(testgame.is_players_marble("PlayerB", (5,0)))
+    print(testgame.get_marble_count())
+    print(testgame.get_column(1))
 
-testgame = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-testgame.print_board()
-print(testgame.get_marble((6, 0)))
-print(testgame.get_captured("PlayerA"))
-print(testgame.get_opposing_player("PlayerB"))
-print(testgame.is_players_marble("PlayerB", (5,0)))
-print(testgame.get_marble_count())
-print(testgame.get_board())
+if __name__ == '__main__':
+    main()
