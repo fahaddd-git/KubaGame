@@ -50,6 +50,7 @@ class KubaGame:
         black = [[0, 0], [1, 0], [1, 1], [0, 1], [6, 6], [6, 5], [5, 5], [5, 6]]
         white = [[6, 0], [6, 1], [5, 1], [5, 0], [0, 6], [0, 5], [1, 5], [1, 6]]
         red = [[1, 3], [2, 2], [2, 3], [2, 4], [3, 1], [3, 2], [3, 3], [3, 4], [3, 5], [4, 2], [4, 3], [4, 4], [5, 3]]
+
         for marble in white:
             board[marble[0]][marble[1]] = "B"
         for marble in black:
@@ -271,6 +272,8 @@ class KubaGame:
         if self.is_players_marble(playername, coordinates) ==False:
             return False
 
+        #TODO: ko rule
+
 
         # get the column as a list for vertical movements
         if direction=="B" or direction=="F":
@@ -339,10 +342,6 @@ class KubaGame:
         :param coordinates tuple: coordinates of the marble to be moved
         :param direction String: direction to move the marble at the specified coordinates. Valid directions are L, R, F, B"""
 
-        # '''If the move is being made after the game has been won, or when it's not the player's turn
-        #  or if the coordinates provided are not valid or a marble in the coordinates cannot be moved
-        #  in the direction specified or it is not the player's marble or for any other invalid conditions return False'''
-
         # game over, turn is opposing player, no marble at coordinate, not this player's marble at coordinate
         if self.validate_move(playername, coordinates, direction) is False:
             return False
@@ -359,12 +358,9 @@ class KubaGame:
             # check for a winner
             self.check_winner(playername)
 
-
-
             return True
 
 
-# TODO: implement moving the marble row and column logic,
 def main():
     testgame = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
     testgame.print_board()
