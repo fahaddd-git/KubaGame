@@ -8,9 +8,9 @@ class KubaGame:
         :param player1 tuple: contains player name and color of the marble that the player is playing B or W
         :param player1 tuple: contains player name and color of the marble that the player is playing B or W
         """
-        # players of the game  {player1name: {color: , red_marbles:
-        self._players = {player1[0]: {"name": player1[0], "color": player1[1]},
-                         player2[0]: {"name": player2[0], "color": player2[1]}}
+        # players of the game  {player1name: {name: , color: , count of color remaining:
+        self._players = {player1[0]: {"name": player1[0], "color": player1[1], "remaining":8 },
+                         player2[0]: {"name": player2[0], "color": player2[1], "remaining":8 }}
         # empty board, no marbles yet
         self._board = self.create_board()
         # current player's turn
@@ -19,6 +19,25 @@ class KubaGame:
         self._winner = None
         # red marbles captured for each player
         self._captured = {player1[0]: 0, player2[0]: 0}
+
+    def get_remaining(self, playername):
+        """
+
+        :param playername string: name of player to lookup
+        :return: remaining black or white marbles of given player
+        """
+        return self._players[playername]["remaining"]
+
+    def set_remaining(self, playername):
+        """
+
+        :param playername: current player's name
+        :return: decrements opposing player's remaining colored marbles by 1
+        """
+        opposing=self.get_opposing_player(playername)
+        self._players[opposing]["remaining"]-=1
+
+
 
     def create_board(self):
         """Creates starting iteration of the game board"""
@@ -178,6 +197,26 @@ class KubaGame:
                 # return what got popped off so we can add to marble count
                 return discarded_tile
 
+    def add_marble_count(self, tile, playername):
+        """
+        :param tile: tile that was removed/discarded
+        :param playername string: current player's turn
+        :return: pushed off tile added to marble count
+        """
+        opposition=self.get_opposing_player(playername)
+        if tile==[]:
+            return
+        elif tile=="R":
+            # increment red marble count for this player
+            self._captured[playername]+=1
+        elif tile==self._players[opposition]["color"]:
+            # decrement remaining b/w marbles of opposite player
+            self.set_remaining(playername)
+        else:
+            return "error"
+
+
+
     def get_marble_count(self):
         """Returns the number of White, Black, and Red marbles on the board as a tuple. (W,B,R)
         """
@@ -203,6 +242,7 @@ class KubaGame:
         except KeyError:
             return "no player exists"
 
+
     def validate_move(self, playername, coordinates, direction):
         """
         :param playername string: name of player
@@ -211,8 +251,6 @@ class KubaGame:
         :return: True or False
         """
         row_coord, column_coord=coordinates[0], coordinates[1]
-
-
 
         # not this player's marble or out of range
         if self.is_players_marble(playername, coordinates) is False:
@@ -268,10 +306,8 @@ class KubaGame:
                 if [] not in proposed_row[column_coord::-1] and proposed_row[column_coord] == proposed_row[0]:
                     return False
 
-
+        # all conditions met, return True
         return True
-
-
 
 
 
@@ -294,6 +330,9 @@ class KubaGame:
             self._turn = self.get_opposing_player(playername)
 
 
+        self.move(coordinates, direction)
+
+
 # TODO: implement moving the marble row and column logic,
 def main():
     testgame = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
@@ -304,7 +343,7 @@ def main():
     print(testgame.is_players_marble("PlayerB", (5,0)))
     print(testgame.get_marble_count())
     print(testgame.get_column(1))
-    print(testgame.validate_move("PlayerA",(0,1), "B"))
+    print(testgame.validate_move("PlayerA",(1,1), "B"))
 
 if __name__ == '__main__':
     main()

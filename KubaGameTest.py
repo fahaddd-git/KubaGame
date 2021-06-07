@@ -68,7 +68,7 @@ class TestGame(unittest.TestCase):
         self.assertFalse(self.game.validate_move(name,(0,1), "F"))
         self.assertFalse(self.game.validate_move(name,(5,6), "B"))
         # attempt to move F and B but a marble blocking
-        self.assertFalse(self.game.validate_move(name,(0,1), "B"))
+        self.assertFalse(self.game.validate_move(name,(1,1), "B"))
         self.assertFalse(self.game.validate_move(name,(5,6), "F"))
         # attempt to push off own marble moving L and R
         self.assertFalse(self.game.validate_move(name,(0,1), "L"))
@@ -86,3 +86,25 @@ class TestGame(unittest.TestCase):
     def test_get_marble(self):
         # test with negative indices
         self.assertEqual(self.game.get_marble((1,-1)), "X")
+
+    def test_get_opposing_player(self):
+        # test get_opposing_player func
+        self.assertEqual(self.game.get_opposing_player("player2"), "player1")
+
+    def test_add_marble_count(self):
+        # adding to marble counters
+        name="player1" # Black
+        opposition="player2"
+        # no marble captured
+        self.game.add_marble_count([], name)
+        self.assertEqual(self.game.get_captured(name), 0)
+        # opposing color marble captured
+        self.game.add_marble_count("W", name)
+        self.assertEqual(self.game.get_captured(name), 0) # not a red marble
+        self.assertEqual(self.game.get_remaining(opposition), 7) # count of opposing player's marbles
+        # red marble captured
+        self.game.add_marble_count("R", name)
+        self.assertEqual(self.game.get_captured(name), 1)
+        # own marble captured (shouldn't be possible)
+        self.game.add_marble_count("B", name)
+        self.assertEqual(self.game.get_remaining(name), 8)  # count of opposing player's marbles
