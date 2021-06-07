@@ -130,8 +130,8 @@ class TestGame(unittest.TestCase):
             ['W', 'W', [],  'W',  [],  'B',  'B'],
             ['W', 'W', [],  'B',  [],  'B',  'B'],
             [[],  [],  [],  'W',  [],   [],  []],
-            [[],  'W', 'R', 'R', 'R',  'R', []],
-            [[],  'R', 'R', 'R', 'R',  [], []],
+            [[],  'W', 'R', 'R', 'R',  'R',  []],
+            [[],  'R', 'R', 'R', 'R',  [],   []],
             [[],  'B', [],  'R',  [],  'W', 'W'],
             [[],  'R', [],  'B',  [],  'W', 'W']
        ])
@@ -166,4 +166,51 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.game.get_marble_count(), (white-1, black, red-1))
         # should still be player1's turn
         self.assertEqual(self.game.get_current_turn(), name)
+
+    def test_winning_eliminated_opposing_marbles(self):
+        name="player2" # white
+        opposing="player1" # black
+        self.game.set_board( [
+            ['W', 'W', [],  'W',  [],  [],  []],
+            ['W', 'W', [],  'R',  [],  [],  []],
+            [[],  [],  [],  'W',  [],   [],  []],
+            [[],  'W', 'R', 'R', 'R',  'R',  []],
+            [[],  'R', 'R', 'R', 'R',  [],   []],
+            [[],  'W', [],  'R',  [],  'W', 'W'],
+            [[],  'R', [],  'B',  [],  'W', 'W']
+       ])
+        # set black marble count to 1 for testing
+        self.game._players[opposing]["remaining"]=1
+        # push off last black marble
+        self.assertTrue(self.game.make_move(name, (0,3), "B"))
+        # check count of black marbles
+        self.assertEqual(self.game.get_remaining(opposing),0)
+        # check winner, white should have won
+        self.assertEqual(self.game.get_winner(),"player2")
+        # try and make move after a winner is found
+        self.assertFalse(self.game.make_move(opposing,(2,2), "B"))
+
+    def test_winning_7red_marbles(self):
+        name = "player2"  # white
+        opposing = "player1"  # black
+        self.game.set_board([
+            ['W', 'W', [], [], [], [], []],
+            ['W', 'W', [], [], [], [], []],
+            [[], [], [], [], [], [], []],
+            [[], [], [], [], [], [], []],
+            [[], [], [], [], [], [], []],
+            [[], 'W', [], 'R', [], 'W', 'W'],
+            [[], 'R', [], 'B', [], 'W', 'W']
+        ])
+        # set red marbles captured for player2 to 6
+        self.game._captured[name]=6
+        self.assertEqual(self.game.get_captured(name), 6)
+        # capture 7th red marble
+        self.assertTrue(self.game.make_move(name, (5,1), "B"))
+        # check winner
+        self.assertEqual(self.game.get_winner(),name)
+        # try and make move after a winner is found
+        self.assertFalse(self.game.make_move(opposing, (6, 3), "F"))
+
+
 
