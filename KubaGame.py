@@ -310,6 +310,10 @@ class KubaGame:
         return True
 
     def check_winner(self, playername):
+        """
+        :param playername:string name of the current player
+        :return: sets winner if one is found
+        """
         marbles=self.get_marble_count()
         opposing=self.get_opposing_player(playername)
         white,black,red=marbles[0],marbles[1],marbles[2]
@@ -348,10 +352,12 @@ class KubaGame:
         if self._turn is None:
             self._turn = self.get_opposing_player(playername)
         # check for a winner
+        self.check_winner(playername)
 
 
 
         self.move(coordinates, direction)
+        return True
 
 
 # TODO: implement moving the marble row and column logic,
