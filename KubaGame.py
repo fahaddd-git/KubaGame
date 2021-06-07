@@ -45,7 +45,7 @@ class KubaGame:
     def create_board(self):
         """Creates starting iteration of the game board"""
         # empty 7x7 board
-        board = [[list() for x in range(7)] for y in range(7)]
+        board = [["X" for x in range(7)] for y in range(7)]
         # coordinates of starting marbles
         black = [[0, 0], [1, 0], [1, 1], [0, 1], [6, 6], [6, 5], [5, 5], [5, 6]]
         white = [[6, 0], [6, 1], [5, 1], [5, 0], [0, 6], [0, 5], [1, 5], [1, 6]]
@@ -115,7 +115,7 @@ class KubaGame:
 
         try:
             # no marble at given coordinates
-            if self._board[coordinates[0]][coordinates[1]] == []:
+            if self._board[coordinates[0]][coordinates[1]] == "X":
                 return "X"
             if row <0 or col<0:
                 return "X"
@@ -174,15 +174,15 @@ class KubaGame:
         # gives index of next empty spaces (if any)
         for index, item in enumerate(row, start=0):
             # if the empty space is after chosen coord or we reached the end
-            if (index > coord_col and item == []) or index == len(row) - 1:
+            if (index > coord_col and item == "X") or index == len(row) - 1:
                 # print(index, item)
                 # pop off empty space or end
                 discarded_tile = row.pop(index)
                 # put an empty space before it (avoid indexing error)
                 if coord_col - 1 < 0:
-                    row.insert(0, [])
+                    row.insert(0, "X")
                 else:
-                    row.insert(coord_col - 1, [])
+                    row.insert(coord_col - 1, "X")
                 # reverse back row if moving L or F
 
                 if direction == "L":
@@ -208,7 +208,7 @@ class KubaGame:
         :return: pushed off tile added to marble count
         """
         opposition=self.get_opposing_player(playername)
-        if tile==[]:
+        if tile=="X":
             return
         elif tile=="R":
             # increment red marble count for this player
@@ -280,14 +280,14 @@ class KubaGame:
             proposed_row = self.get_column(column_coord)
             if direction=="F":
                 # check if not a empty space and the marbles are the same color (can't push off own marble)
-                if [] not in proposed_row[row_coord::-1] and proposed_row[row_coord] == proposed_row[0]:
+                if "X" not in proposed_row[row_coord::-1] and proposed_row[row_coord] == proposed_row[0]:
                     return False
                 # attempt to move up but marble blocking below
                 if self.get_marble((row_coord + 1, column_coord)) != "X":
                     return False
 
             elif direction=="B":
-                if [] not in proposed_row[row_coord:] and proposed_row[row_coord] == proposed_row[-1]:
+                if "X" not in proposed_row[row_coord:] and proposed_row[row_coord] == proposed_row[-1]:
                     return False
                 # attempt to move down but marble blocking above
                 if self.get_marble((row_coord - 1, column_coord)) != "X":
@@ -302,14 +302,14 @@ class KubaGame:
                 if self.get_marble((row_coord, column_coord-1)) != "X":
                     return False
                 # no empty square to the right and marble same color as end
-                if [] not in proposed_row[column_coord:] and proposed_row[column_coord] == proposed_row[-1]:
+                if "X" not in proposed_row[column_coord:] and proposed_row[column_coord] == proposed_row[-1]:
                     return False
             # try move left, marble on right
             elif direction=="L":
                 if self.get_marble((row_coord, column_coord+1))!="X":
                     return False
                 # no empty square to left, marbles same color as end
-                if [] not in proposed_row[column_coord::-1] and proposed_row[column_coord] == proposed_row[0]:
+                if "X" not in proposed_row[column_coord::-1] and proposed_row[column_coord] == proposed_row[0]:
                     return False
 
         # all conditions met, return True

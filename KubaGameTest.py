@@ -6,13 +6,13 @@ import unittest
 from KubaGame import KubaGame
 
 class TestGame(unittest.TestCase):
-    # ['W', 'W', [], [], [], 'B', 'B']
-    # ['W', 'W', [], 'R', [], 'B', 'B']
-    # [[], [], 'R', 'R', 'R', [], []]
-    # [[], 'R', 'R', 'R', 'R', 'R', []]
-    # [[], [], 'R', 'R', 'R', [], []]
-    # ['B', 'B', [], 'R', [], 'W', 'W']
-    # ['B', 'B', [], [], [], 'W', 'W']
+    # ['W', 'W', "X", "X", "X", 'B', 'B']
+    # ['W', 'W', "X", 'R', "X", 'B', 'B']
+    # ["X", "X", 'R', 'R', 'R', "X", "X"]
+    # ["X", 'R', 'R', 'R', 'R', 'R', "X"]
+    # ["X", "X", 'R', 'R', 'R', "X", "X"]
+    # ['B', 'B', "X", 'R', "X", 'W', 'W']
+    # ['B', 'B', "X", "X", "X", 'W', 'W']
 
     def setUp(self) -> None:
         # create instance
@@ -23,24 +23,24 @@ class TestGame(unittest.TestCase):
     def test_move_L(self):
         # basic move from start of game
         self.game.move((5,1), "L")
-        self.assertEqual(self.game.get_board()[5], ['B', [], [], 'R', [], 'W', 'W'])
+        self.assertEqual(self.game.get_board()[5], ['B', "X", "X", 'R', "X", 'W', 'W'])
 
 
     def test_move_R(self):
         # basic move from start of game
         self.game.move((5, 5), "R")
-        self.assertEqual(self.game.get_board()[5], ['B', 'B', [], 'R', [], [], 'W'])
+        self.assertEqual(self.game.get_board()[5], ['B', 'B', "X", 'R', "X", "X", 'W'])
 
 
     def test_move_B(self):
         # basic move from start of game
         self.game.move((5, 5), "B")
-        self.assertEqual(self.game.get_column(5), ['B', 'B', [], 'R', [], [], 'W'])
+        self.assertEqual(self.game.get_column(5), ['B', 'B', "X", 'R', "X", "X", 'W'])
 
     def test_move_F(self):
         # basic move from start of game
         self.game.move((0, 6), "F")
-        self.assertEqual(self.game.get_column(6), ['B', [], [], [], [], 'W', 'W'])
+        self.assertEqual(self.game.get_column(6), ['B', "X", "X", "X", "X", 'W', 'W'])
 
     def test_marble_count_initial(self):
         # initial marble count tuple (W, B, R)
@@ -55,13 +55,13 @@ class TestGame(unittest.TestCase):
     def test_get_captured(self):
         # red marbles captured initially
         self.assertEqual(self.game.get_captured("player2"), 0)
-    # ['W', 'W', [], [], [], 'B', 'B']
-    # ['W', 'W', [], 'R', [], 'B', 'B']
-    # [[], [], 'R', 'R', 'R', [], []]
-    # [[], 'R', 'R', 'R', 'R', 'R', []]
-    # [[], [], 'R', 'R', 'R', [], []]
-    # ['B', 'B', [], 'R', [], 'W', 'W']
-    # ['B', 'B', [], [], [], 'W', 'W']
+    # ['W', 'W', "X", "X", "X", 'B', 'B']
+    # ['W', 'W', "X", 'R', "X", 'B', 'B']
+    # ["X", "X", 'R', 'R', 'R', "X", "X"]
+    # ["X", 'R', 'R', 'R', 'R', 'R', "X"]
+    # ["X", "X", 'R', 'R', 'R', "X", "X"]
+    # ['B', 'B', "X", 'R', "X", 'W', 'W']
+    # ['B', 'B', "X", "X", "X", 'W', 'W']
     def test_validate_move_false(self):
         name="player2"
         #attempt to push off own marble moving F and B
@@ -108,7 +108,7 @@ class TestGame(unittest.TestCase):
         name="player1" # Black
         opposition="player2"
         # no marble captured
-        self.game.add_marble_count([], name)
+        self.game.add_marble_count("X", name)
         self.assertEqual(self.game.get_captured(name), 0)
         # opposing color marble captured
         self.game.add_marble_count("W", name)
@@ -127,13 +127,13 @@ class TestGame(unittest.TestCase):
 
         self.game.set_board(
        [
-            ['W', 'W', [],  'W',  [],  'B',  'B'],
-            ['W', 'W', [],  'B',  [],  'B',  'B'],
-            [[],  [],  [],  'W',  [],   [],  []],
-            [[],  'W', 'R', 'R', 'R',  'R',  []],
-            [[],  'R', 'R', 'R', 'R',  [],   []],
-            [[],  'B', [],  'R',  [],  'W', 'W'],
-            [[],  'R', [],  'B',  [],  'W', 'W']
+            ['W', 'W', "X",  'W',  "X",  'B',  'B'],
+            ['W', 'W', "X",  'B',  "X",  'B',  'B'],
+            ["X",  "X",  "X",  'W',  "X",   "X",  "X"],
+            ["X",  'W', 'R', 'R', 'R',  'R',  "X"],
+            ["X",  'R', 'R', 'R', 'R',  "X",   "X"],
+            ["X",  'B', "X",  'R',  "X",  'W', 'W'],
+            ["X",  'R', "X",  'B',  "X",  'W', 'W']
        ])
         marbles=self.game.get_marble_count()
         white, black, red=marbles[0], marbles[1], marbles[2]
@@ -171,13 +171,13 @@ class TestGame(unittest.TestCase):
         name="player2" # white
         opposing="player1" # black
         self.game.set_board( [
-            ['W', 'W', [],  'W',  [],  [],  []],
-            ['W', 'W', [],  'R',  [],  [],  []],
-            [[],  [],  [],  'W',  [],   [],  []],
-            [[],  'W', 'R', 'R', 'R',  'R',  []],
-            [[],  'R', 'R', 'R', 'R',  [],   []],
-            [[],  'W', [],  'R',  [],  'W', 'W'],
-            [[],  'R', [],  'B',  [],  'W', 'W']
+            ['W', 'W', "X",  'W',  "X",  "X",  "X"],
+            ['W', 'W', "X",  'R',  "X",  "X",  "X"],
+            ["X",  "X",  "X",  'W',  "X",   "X",  "X"],
+            ["X",  'W', 'R', 'R', 'R',  'R',  "X"],
+            ["X",  'R', 'R', 'R', 'R',  "X",   "X"],
+            ["X",  'W', "X",  'R',  "X",  'W', 'W'],
+            ["X",  'R', "X",  'B',  "X",  'W', 'W']
        ])
         # set black marble count to 1 for testing
         self.game._players[opposing]["remaining"]=1
@@ -194,13 +194,13 @@ class TestGame(unittest.TestCase):
         name = "player2"  # white
         opposing = "player1"  # black
         self.game.set_board([
-            ['W', 'W', [], [], [], [], []],
-            ['W', 'W', [], [], [], [], []],
-            [[], [], [], [], [], [], []],
-            [[], [], [], [], [], [], []],
-            [[], [], [], [], [], [], []],
-            [[], 'W', [], 'R', [], 'W', 'W'],
-            [[], 'R', [], 'B', [], 'W', 'W']
+            ['W', 'W', "X", "X", "X", "X", "X"],
+            ['W', 'W', "X", "X", "X", "X", "X"],
+            ["X", "X", "X", "X", "X", "X", "X"],
+            ["X", "X", "X", "X", "X", "X", "X"],
+            ["X", "X", "X", "X", "X", "X", "X"],
+            ["X", 'W', "X", 'R', "X", 'W', 'W'],
+            ["X", 'R', "X", 'B', "X", 'W', 'W']
         ])
         # set red marbles captured for player2 to 6
         self.game._captured[name]=6
