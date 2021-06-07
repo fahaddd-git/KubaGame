@@ -62,7 +62,7 @@ class TestGame(unittest.TestCase):
     # [[], [], 'R', 'R', 'R', [], []]
     # ['B', 'B', [], 'R', [], 'W', 'W']
     # ['B', 'B', [], [], [], 'W', 'W']
-    def test_validate_move(self):
+    def test_validate_move_false(self):
         name="player2"
         #attempt to push off own marble moving F and B
         self.assertFalse(self.game.validate_move(name,(0,1), "F"))
@@ -77,4 +77,12 @@ class TestGame(unittest.TestCase):
         self.assertFalse(self.game.validate_move(name,(0,0), "L"))
         self.assertFalse(self.game.validate_move(name,(6,6), "R"))
 
+    def test_validate_move_true(self):
+        name="player1"
+        # push own marbles L and R
+        self.assertTrue(self.game.validate_move(name, (0,6), "L"))
+        self.assertTrue(self.game.validate_move(name, (6,0), "R"))
 
+    def test_get_marble(self):
+        # test with negative indices
+        self.assertEqual(self.game.get_marble((1,-1)), "X")

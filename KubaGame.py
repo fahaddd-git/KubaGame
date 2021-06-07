@@ -87,15 +87,23 @@ class KubaGame:
         """Returns which color marble is present at the given coordinates.
         If no marble present returns X.
         :param coordinates tuple: coordinates of where to locate the requested marble"""
+
+        row,col=coordinates[0],coordinates[1]
+
         try:
             # no marble at given coordinates
             if self._board[coordinates[0]][coordinates[1]] == []:
                 return "X"
-            else:
-                return self._board[coordinates[0]][coordinates[1]]
-        # coordinate was out of range
+            if row <0 or col<0:
+                return "X"
+
+        # coord out of range
         except IndexError:
-            return "X"
+                return "X"
+        # passed tests, must exist
+        return self._board[coordinates[0]][coordinates[1]]
+
+
 
     def get_column(self, column):
         """
@@ -261,8 +269,6 @@ class KubaGame:
                     return False
 
 
-
-
         return True
 
 
@@ -280,8 +286,7 @@ class KubaGame:
         #  in the direction specified or it is not the player's marble or for any other invalid conditions return False'''
 
         # game over, turn is opposing player, no marble at coordinate, not this player's marble at coordinate
-        if self._winner != None or self._turn == self.get_opposing_player(playername) or \
-                self.get_marble(coordinates) == "X" or self.is_players_marble(playername, coordinates)==False:
+        if self.validate_move(playername, coordinates, direction) is False:
             return False
 
         # update turn after first player plays to be opposite player's turn
@@ -299,7 +304,7 @@ def main():
     print(testgame.is_players_marble("PlayerB", (5,0)))
     print(testgame.get_marble_count())
     print(testgame.get_column(1))
-    print(testgame.validate_move("PlayerA",(0,1), "L"))
+    print(testgame.validate_move("PlayerA",(0,1), "B"))
 
 if __name__ == '__main__':
     main()
