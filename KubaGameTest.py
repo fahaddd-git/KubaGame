@@ -19,6 +19,7 @@ class TestGame(unittest.TestCase):
         self.game=KubaGame(("player1", "B"), ("player2", "W"))
 
 
+
     def test_move_L(self):
         # basic move from start of game
         self.game.move((5,1), "L")
@@ -54,3 +55,26 @@ class TestGame(unittest.TestCase):
     def test_get_captured(self):
         # red marbles captured initially
         self.assertEqual(self.game.get_captured("player2"), 0)
+    # ['W', 'W', [], [], [], 'B', 'B']
+    # ['W', 'W', [], 'R', [], 'B', 'B']
+    # [[], [], 'R', 'R', 'R', [], []]
+    # [[], 'R', 'R', 'R', 'R', 'R', []]
+    # [[], [], 'R', 'R', 'R', [], []]
+    # ['B', 'B', [], 'R', [], 'W', 'W']
+    # ['B', 'B', [], [], [], 'W', 'W']
+    def test_validate_move(self):
+        name="player2"
+        #attempt to push off own marble moving F and B
+        self.assertFalse(self.game.validate_move(name,(0,1), "F"))
+        self.assertFalse(self.game.validate_move(name,(5,6), "B"))
+        # attempt to move F and B but a marble blocking
+        self.assertFalse(self.game.validate_move(name,(0,1), "B"))
+        self.assertFalse(self.game.validate_move(name,(5,6), "F"))
+        # attempt to push off own marble moving L and R
+        self.assertFalse(self.game.validate_move(name,(0,1), "L"))
+        self.assertFalse(self.game.validate_move(name,(6,5), "R"))
+        # attempt to move L and R but a marble blocking
+        self.assertFalse(self.game.validate_move(name,(0,0), "L"))
+        self.assertFalse(self.game.validate_move(name,(6,6), "R"))
+
+

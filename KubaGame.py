@@ -195,7 +195,7 @@ class KubaGame:
         except KeyError:
             return "no player exists"
 
-    def validate_move(self, row, playername, coordinates, direction):
+    def validate_move(self, playername, coordinates, direction):
         """
         :param playername string: name of player
         :param coordinates tuple: coordinates
@@ -204,24 +204,6 @@ class KubaGame:
         """
         row_coord, column_coord=coordinates[0], coordinates[1]
 
-        # get the column as a list for vertical movements
-        if direction=="B" or "F":
-            proposed_row=self.get_column(column_coord)
-            # try move down, marble above
-            if direction=="B" and self.get_marble((row_coord-1, column_coord))!="X":
-                return False
-            elif direction=="F" and self.get_marble((row_coord+1, column_coord))!="X":
-                return False
-
-        # get the row for horizontal movements
-        elif direction=="L" or "R":
-            proposed_row=self._board[row_coord]
-            # try move right, marble on left
-            if direction=="R" and self.get_marble((row_coord, column_coord-1)) != "X":
-                return False
-            # try move left, marble on right
-            elif direction=="L" and self.get_marble((row_coord, column_coord+1))!="X":
-                return False
 
 
         # not this player's marble or out of range
@@ -240,9 +222,48 @@ class KubaGame:
         if self.is_players_marble(playername, coordinates) ==False:
             return False
 
-        # same color marble at end of row with no spaces in between
-        if [] not in row[column_coord:] and row[column_coord] == row[-1]:
-            return False
+
+        # get the column as a list for vertical movements
+        if direction=="B" or direction=="F":
+            proposed_row = self.get_column(column_coord)
+            if direction=="F":
+                # check if not a empty space and the marbles are the same color (can't push off own marble)
+                if [] not in proposed_row[row_coord::-1] and proposed_row[row_coord] == proposed_row[0]:
+                    return False
+                # attempt to move up but marble blocking below
+                if self.get_marble((row_coord + 1, column_coord)) != "X":
+                    return False
+
+            elif direction=="B":
+                if [] not in proposed_row[row_coord:] and proposed_row[row_coord] == proposed_row[-1]:
+                    return False
+                # attempt to move down but marble blocking above
+                if self.get_marble((row_coord - 1, column_coord)) != "X":
+                    return False
+
+
+        # get the row for horizontal movements
+        elif direction=="L" or direction=="R":
+            proposed_row=self._board[row_coord]
+            if direction=="R":
+                # try move right, marble on left
+                if self.get_marble((row_coord, column_coord-1)) != "X":
+                    return False
+                # no empty square to the right and marble same color as end
+                if [] not in proposed_row[column_coord:] and proposed_row[column_coord] == proposed_row[-1]:
+                    return False
+            # try move left, marble on right
+            elif direction=="L":
+                if self.get_marble((row_coord, column_coord+1))!="X":
+                    return False
+                # no empty square to left, marbles same color as end
+                if [] not in proposed_row[column_coord::-1] and proposed_row[column_coord] == proposed_row[0]:
+                    return False
+
+
+
+
+        return True
 
 
 
@@ -278,6 +299,7 @@ def main():
     print(testgame.is_players_marble("PlayerB", (5,0)))
     print(testgame.get_marble_count())
     print(testgame.get_column(1))
+    print(testgame.validate_move("PlayerA",(0,1), "L"))
 
 if __name__ == '__main__':
     main()
