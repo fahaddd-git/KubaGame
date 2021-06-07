@@ -36,10 +36,21 @@ class TestGame(unittest.TestCase):
         self.game.move((5, 5), "B")
         self.assertEqual(self.game.get_column(5), ['B', 'B', [], 'R', [], [], 'W'])
 
-
-
     def test_move_F(self):
         # basic move from start of game
         self.game.move((0, 6), "F")
-        self.assertEqual(self.game.get_column(6), ['B', [], [], 'R', [], 'W', 'W'])
+        self.assertEqual(self.game.get_column(6), ['B', [], [], [], [], 'W', 'W'])
 
+    def test_marble_count_initial(self):
+        # initial marble count tuple (W, B, R)
+        initial_count=self.game.get_marble_count()
+        self.assertEqual(initial_count,(8,8,13))
+
+    def test_initial_winner(self):
+        # winner should be init to None
+        winner=self.game.get_winner()
+        self.assertEqual(winner, None)
+
+    def test_get_captured(self):
+        # red marbles captured initially
+        self.assertEqual(self.game.get_captured("player2"), 0)

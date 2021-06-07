@@ -195,6 +195,59 @@ class KubaGame:
         except KeyError:
             return "no player exists"
 
+    def validate_move(self, row, playername, coordinates, direction):
+        """
+        :param playername string: name of player
+        :param coordinates tuple: coordinates
+        :param direction string: direction of pushing
+        :return: True or False
+        """
+        row_coord, column_coord=coordinates[0], coordinates[1]
+
+        # get the column as a list for vertical movements
+        if direction=="B" or "F":
+            proposed_row=self.get_column(column_coord)
+            # try move down, marble above
+            if direction=="B" and self.get_marble((row_coord-1, column_coord))!="X":
+                return False
+            elif direction=="F" and self.get_marble((row_coord+1, column_coord))!="X":
+                return False
+
+        # get the row for horizontal movements
+        elif direction=="L" or "R":
+            proposed_row=self._board[row_coord]
+            # try move right, marble on left
+            if direction=="R" and self.get_marble((row_coord, column_coord-1)) != "X":
+                return False
+            # try move left, marble on right
+            elif direction=="L" and self.get_marble((row_coord, column_coord+1))!="X":
+                return False
+
+
+        # not this player's marble or out of range
+        if self.is_players_marble(playername, coordinates) is False:
+            return False
+        # not this player's turn
+        if self._turn is self.get_opposing_player(playername):
+            return False
+        # game won already
+        if self.get_winner() is not None:
+            return False
+        # no marble at this location
+        if self.get_marble(coordinates)=="X":
+            return False
+        # not this player's marble
+        if self.is_players_marble(playername, coordinates) ==False:
+            return False
+
+        # same color marble at end of row with no spaces in between
+        if [] not in row[column_coord:] and row[column_coord] == row[-1]:
+            return False
+
+
+
+
+
     def make_move(self, playername, coordinates, direction):
         """Makes a move on the game board. If the move is successful returns True else returns False.
         :param playername String: name of the player making the move
