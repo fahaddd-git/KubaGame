@@ -37,7 +37,10 @@ class KubaGame:
         opposing=self.get_opposing_player(playername)
         self._players[opposing]["remaining"]-=1
 
-
+    def set_board(self, board):
+        """"
+        :param sets board to this for testing purposes"""
+        self._board=board
 
     def create_board(self):
         """Creates starting iteration of the game board"""
@@ -343,21 +346,22 @@ class KubaGame:
         # game over, turn is opposing player, no marble at coordinate, not this player's marble at coordinate
         if self.validate_move(playername, coordinates, direction) is False:
             return False
+        else:
+            # validated. make the move, returns the discarded marble/tile
+            removed_tile=self.move(coordinates,direction)
+            # tile into marble counter
+            self.add_marble_count(removed_tile,playername)
+            # update turn after first player plays to be opposite player's turn
+            if self._turn is None:
+                self._turn = self.get_opposing_player(playername)
+            else:
+                self._turn=self.get_opposing_player(playername)
+            # check for a winner
+            self.check_winner(playername)
 
-        # validated. make the move, returns the discarded marble/tile
-        removed_tile=self.move(coordinates,direction)
-        # tile into marble counter
-        self.add_marble_count(removed_tile,playername)
-        # update turn after first player plays to be opposite player's turn
-        if self._turn is None:
-            self._turn = self.get_opposing_player(playername)
-        # check for a winner
-        self.check_winner(playername)
 
 
-
-        self.move(coordinates, direction)
-        return True
+            return True
 
 
 # TODO: implement moving the marble row and column logic,

@@ -120,3 +120,50 @@ class TestGame(unittest.TestCase):
         # own marble captured (shouldn't be possible)
         self.game.add_marble_count("B", name)
         self.assertEqual(self.game.get_remaining(name), 8)  # count of opposing player's marbles
+
+    def test_push_off_red(self):
+        name="player1" #black
+        opposing='player2'
+
+        self.game.set_board(
+       [
+            ['W', 'W', [],  'W',  [],  'B',  'B'],
+            ['W', 'W', [],  'B',  [],  'B',  'B'],
+            [[],  [],  [],  'W',  [],   [],  []],
+            [[],  'W', 'R', 'R', 'R',  'R', []],
+            [[],  'R', 'R', 'R', 'R',  [], []],
+            [[],  'B', [],  'R',  [],  'W', 'W'],
+            [[],  'R', [],  'B',  [],  'W', 'W']
+       ])
+        marbles=self.game.get_marble_count()
+        white, black, red=marbles[0], marbles[1], marbles[2]
+
+        # turn inited to None
+        self.assertEqual(self.game.get_current_turn(), None)
+        # player1 starts game
+        self.assertTrue(self.game.make_move(name, (6,3), "F"))
+        # move was valid, should be player2's turn
+        self.assertEqual(self.game.get_current_turn(), opposing)
+        # pushed off white, no red captured
+        self.assertEqual(self.game.get_captured(name), 0)
+        # check black marble count
+        self.assertEqual(self.game.get_remaining(name), 8)
+        # white marble count reduced by 1
+        self.assertEqual(self.game.get_remaining(opposing), 7)
+        # check marble count. white has been reduced by 1
+        self.assertEqual(self.game.get_marble_count(), (white-1,black,red))
+        # player2 push off red marble
+        self.assertTrue(self.game.make_move(opposing, (3,1), "B"))
+        # move was valid, should be player1's turn
+        self.assertEqual(self.game.get_current_turn(), name)
+        # player 2 captured a red
+        self.assertEqual(self.game.get_captured(opposing),1)
+        # check marble counter. white was reduced by 1 previously, red now reduced by 1
+        self.assertEqual(self.game.get_marble_count(), (white-1, black, red-1))
+        # player1 try push off own marble, this shouldn't work
+        self.assertFalse(self.game.make_move(name, (1,6), "F"))
+        # check marble count
+        self.assertEqual(self.game.get_marble_count(), (white-1, black, red-1))
+        # should still be player1's turn
+        self.assertEqual(self.game.get_current_turn(), name)
+
