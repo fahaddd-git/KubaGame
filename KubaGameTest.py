@@ -77,6 +77,18 @@ class TestGame(unittest.TestCase):
         self.assertFalse(self.game.validate_move(name,(0,0), "L"))
         self.assertFalse(self.game.validate_move(name,(6,6), "R"))
 
+        # invalid coordinates
+        self.assertFalse(self.game.validate_move(name, (0,-2), "F"))
+        # not this player's marble
+        self.assertFalse(self.game.validate_move(name, (6,0), "L"))
+        # try to push red marble
+        self.assertFalse(self.game.validate_move(name, (2,1), "R"))
+        # game already won
+        self.game._winner=name
+        self.assertFalse(self.game.validate_move(name, (0,0), "R"))
+
+
+
     def test_validate_move_true(self):
         name="player1"
         # push own marbles L and R

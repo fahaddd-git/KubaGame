@@ -137,7 +137,7 @@ class KubaGame:
         """
         :param coords: tuple
         :param row: list
-        :return:
+        :return: tile/marble that was removed
         """
         row_length = len(self._board) - 1
 
@@ -309,6 +309,21 @@ class KubaGame:
         # all conditions met, return True
         return True
 
+    def check_winner(self, playername):
+        marbles=self.get_marble_count()
+        opposing=self.get_opposing_player(playername)
+        white,black,red=marbles[0],marbles[1],marbles[2]
+        # this player has captured 7 red marbles therefore wins
+        if self.get_captured(playername)>=7:
+            self._winner=playername
+            return
+        # this player has captured all the opponent's playable marbles
+        if self.get_remaining(opposing)==0:
+            self._winner=playername
+            return
+
+
+
 
 
     def make_move(self, playername, coordinates, direction):
@@ -325,9 +340,15 @@ class KubaGame:
         if self.validate_move(playername, coordinates, direction) is False:
             return False
 
+        # validated. make the move, returns the discarded marble/tile
+        removed_tile=self.move(coordinates,direction)
+        # tile into marble counter
+        self.add_marble_count(removed_tile,playername)
         # update turn after first player plays to be opposite player's turn
         if self._turn is None:
             self._turn = self.get_opposing_player(playername)
+        # check for a winner
+
 
 
         self.move(coordinates, direction)
