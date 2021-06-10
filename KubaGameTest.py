@@ -212,5 +212,36 @@ class TestGame(unittest.TestCase):
         # try and make move after a winner is found
         self.assertFalse(self.game.make_move(opposing, (6, 3), "F"))
 
+    def test_previous_board_initialization(self):
+        self.assertEqual(self.game._previous_board, self.game.get_board())
+
+    def test_ko_rule(self):
+        p1="player1" # black
+        p2='player2'  # white
+        self.game.set_board([
+            ['W', 'W', "B", "B", "X", "X", "X"],
+            ['W', 'W', "X", "X", "X", "X", "X"],
+            ["X", "X", "X", "X", "X", "X", "X"],
+            ["X", "X", "X", "X", "X", "X", "X"],
+            ["X", "X", "X", "X", "X", "X", "X"],
+            ["W", 'W', "X", 'R', "X", 'W', 'W'],
+            ["X", 'R', "X", 'B', "X", 'W', 'W']
+        ])
+        # player 2 pushes to right
+        self.game.make_move(p2, (0,0), "R")
+        self.assertEqual(self.game.get_board()[0], ['X', 'W', 'W', "B", "B", "X", "X"])
+        # player 1 invokes ko rule
+        self.assertFalse(self.game.make_move(p1, (4,0), "L"))
+        self.assertEqual(self.game.get_board()[0], ['X', 'W', 'W', "B", "B", "X", "X"])
+        # player 1's turn still
+        self.assertEqual(self.game.get_current_turn(), "player1")
+        self.assertTrue(self.game.make_move(p1, (0,4), "B"))
+        self.assertEqual(self.game.get_board()[0], ['X', 'W', 'W', "B", "X", "X", "X"])
+
+    def test_invalid_direction(self):
+        self.assertFalse(self.game.make_move("player1", (0,4), "z"))
+
+
+
 
 
