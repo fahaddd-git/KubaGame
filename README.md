@@ -1,6 +1,7 @@
-# portfolio-project
+# KubaGame
+### (also known as Akiba or Traboulet)
 
-Write a class named KubaGame for playing a board game called Kuba. You can see the rules [here](https://sites.google.com/site/boardandpieces/list-of-games/kuba).
+A class called KubaGame for playing a board game called Kuba. You can see the rules [here](https://sites.google.com/site/boardandpieces/list-of-games/kuba).
 A video resource to watch this game rules is [here](https://www.youtube.com/watch?v=XglqkfzsXYc).
 
 Game ends when a player wins. A players wins by pushing off and capturing seven neutral red stones or by pushing off all of the opposing stones. A player who has no legal moves available has lost the game.
